@@ -1,0 +1,161 @@
+---
+title: "README"
+author: "Sara Colom"
+date: "4/22/2021"
+output: github_document
+---
+
+Replication of the Scientific Reports study, Gathering, processing, and interpreting information about COVID‑19
+
+# System version
+
+```{r, message = F, warning = F}
+version
+```
+
+# Libraries
+
+```{r, message = F, warning = F}
+library(tidyverse)
+library(ggplot2)
+library(lavaan)
+```
+
+
+# Data
+
+```{r, message = F, warning = F}
+load("../Data/data_W1_W2_recoded.Rdata")
+
+load("../Data/anonymous_raw_data_W1.Rdata")
+
+raw <- data_numeric %>% 
+  janitor::clean_names()
+
+```
+
+
+Glimpse data
+
+```{r, message = F, warning = F, include = F}
+raw %>% 
+  glimpse
+```
+
+
+# Clean up and re-code data
+
+```{r, message = F, warning = F, include = F}
+
+# Remove the top sixteen slowest respondants
+
+raw <- raw %>% 
+  arrange(-duration_in_seconds) %>% 
+  slice(-c(1:16))
+
+# Remove those that missed the catch question
+
+raw <- raw %>% 
+  filter(q1_catch1 == 5)
+
+# Recode the false Qs
+
+rev_recode <- function(x){
+  car::recode(x, 
+        "1 = 5;
+        2 = 4;
+        4 = 2;
+        5 = 1")
+}
+
+
+clean <- raw %>% 
+  mutate(across(.cols = 22:33, .fns = rev_recode))
+
+colnames(clean)[22:33] <- gsub("r", "", names(clean[22:33]))
+
+
+# Make variables ordinal
+
+
+clean <- clean %>% 
+  mutate(across(.cols = 10:41, .fns = function(x){factor(x, order = TRUE,
+                                                         levels = c("1", "2", "3", "4", "5"))
+    
+  }))
+
+```
+
+# Descriptive statistics
+
+
+```{r, message = F, warning = F}
+
+```
+
+
+# Confirmatory factor analysis
+
+
+```{r, message = F, warning = F}
+set.seed(123)
+
+# Select random subset of 200 for ea question incorporated in their first validation model
+
+rand_subset <- clean %>% 
+  group_by("q1_1", "q1_2", "q1_3", "q1_6", "q1_7", "q1_8", "q1_9", "q1_10", 
+"q1_11", "q1_12", "q1_13", "q1_14", "q1_15", "q1_16", "q1_18", 
+"q1_19", "q1_20", "q1_21", "q1_22", "q1_23", "q1_24", "q1_1consr", 
+"q1_2consr", "q1_3consr", "q1_4consr", "q1_6consr", "q1_8cons") %>% 
+  sample_n(size = 200) 
+  
+
+clean <- droplevels(clean)
+rand_subset_test <- droplevels(clean)
+
+# Model w/o items 4, 5, 7, 17, and 31
+
+# Specify the first validation model
+
+two_fct_model <- "
+
+knowqledge =~ q1_1 + q1_2 + q1_3 + q1_6 + q1_7 + q1_8 + q1_9 + q1_10 + q1_11 + q1_12 + q1_13 + q1_14 + q1_15 + q1_16 + q1_18 + q1_19 + q1_20 + q1_21 + q1_22 + q1_23 + q1_24
+
+consp_rej =~ q1_1consr + q1_2consr + q1_3consr + q1_4consr + q1_6consr + q1_8cons
+"
+# Specify the full model
+
+two_fct_model_full <- "
+
+knowqledge =~ q1_1 + q1_2 + q1_3 + q1_4 + q1_5 + q1_6 + q1_7 + q1_8 + q1_9 + q1_10 + q1_11 + q1_12 + q1_13 + q1_14 + q1_15 + q1_16 + q1_17 + q1_18 + q1_19 + q1_20 + q1_21 + q1_22 + q1_23 + q1_24
+
+consp_rej =~ q1_1consr + q1_2consr + q1_3consr + q1_4consr + q1_5consr + q1_6consr + q1_7consr + q1_8cons
+"
+
+
+fit <- cfa(two_fct_model, ordered = c("1", "2", "3", "4", "5"), rand_subset_test)
+
+fit_full <- cfa(two_fct_model_full,  ordered = c("1", "2", "3", "4", "5"), clean_test) # full data set
+
+```
+
+When the ordered= argument is used, lavaan will automatically switch to the WLSMV estimator: it will use diagonally weighted least squares (DWLS) to estimate the model parameters, but it will use the full weight matrix to compute robust standard errors, and a mean- and variance-adjusted test statistic.
+
+# CFA Results 
+
+## Model Fit
+
+Random subsample
+```{r, message = F, warning = F}
+summary(fit, fit.measures = TRUE)
+```
+
+Full data set
+```{r, message = F, warning = F}
+summary(fit_full, fit.measures = TRUE)
+```
+
+
+# Citations
+
+Boot, A. B., Eerland, A., Jongerling, J., Verkoeijen, P. P. J. L., & Zwaan, R. A. (2021). Gathering, processing, and interpreting information about COVID-19. Scientific Reports, 11(1), 6569. https://doi.org/10.1038/s41598-021-86088-3

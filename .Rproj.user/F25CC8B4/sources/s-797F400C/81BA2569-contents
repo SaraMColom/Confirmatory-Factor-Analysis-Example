@@ -1,0 +1,5 @@
+subset <- clean[10:41]
+
+sub <- subset %>% 
+  select(-4, -5, -17, 29, 31)
+
