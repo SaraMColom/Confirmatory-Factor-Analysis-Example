@@ -135,7 +135,7 @@ consp_rej =~ q1_1consr + q1_2consr + q1_3consr + q1_4consr + q1_5consr + q1_6con
 
 fit <- cfa(two_fct_model, ordered = c("1", "2", "3", "4", "5"), rand_subset_test)
 
-fit_full <- cfa(two_fct_model_full,  ordered = c("1", "2", "3", "4", "5"), clean_test) # full data set
+fit_full <- cfa(two_fct_model_full,  ordered = c("1", "2", "3", "4", "5"), clean) # full data set
 
 ```
 

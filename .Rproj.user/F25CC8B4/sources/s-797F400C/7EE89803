@@ -3,7 +3,7 @@
     "path": "C:/Users/Sara Colom/Desktop/MethodConsultants/lavaan_tutorial/scientific_reports_gathering_covid/Analysis/README.Rmd",
     "project_path": "Analysis/README.Rmd",
     "type": "r_markdown",
-    "hash": "1701258713",
+    "hash": "2304942894",
     "contents": "",
     "dirty": false,
     "created": 1619185662252.0,
@@ -11,15 +11,15 @@
     "relative_order": 1,
     "properties": {
         "tempName": "Untitled1",
-        "cursorPosition": "125,24",
-        "scrollLine": "126"
+        "cursorPosition": "160,233",
+        "scrollLine": "138"
     },
     "folds": "",
-    "lastKnownWriteTime": 1619557686,
+    "lastKnownWriteTime": 1619558083,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1619557686978,
+    "last_content_update": 1619558083470,
     "read_only": false,
     "read_only_alternatives": []
 }

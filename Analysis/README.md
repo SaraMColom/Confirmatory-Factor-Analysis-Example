@@ -58,6 +58,7 @@ Glimpse data
 ``` r
 set.seed(123)
 
+# Select random subset of 200 for ea question incorporated in their first validation model
 
 rand_subset <- clean %>% 
   group_by("q1_1", "q1_2", "q1_3", "q1_6", "q1_7", "q1_8", "q1_9", "q1_10", 
@@ -67,10 +68,12 @@ rand_subset <- clean %>%
   sample_n(size = 200) 
   
 
-clean_test <- droplevels(clean)
+clean <- droplevels(clean)
 rand_subset_test <- droplevels(clean)
 
 # Model w/o items 4, 5, 7, 17, and 31
+
+# Specify the first validation model
 
 two_fct_model <- "
 
@@ -78,6 +81,7 @@ knowqledge =~ q1_1 + q1_2 + q1_3 + q1_6 + q1_7 + q1_8 + q1_9 + q1_10 + q1_11 + q
 
 consp_rej =~ q1_1consr + q1_2consr + q1_3consr + q1_4consr + q1_6consr + q1_8cons
 "
+# Specify the full model
 
 two_fct_model_full <- "
 
@@ -89,7 +93,7 @@ consp_rej =~ q1_1consr + q1_2consr + q1_3consr + q1_4consr + q1_5consr + q1_6con
 
 fit <- cfa(two_fct_model, ordered = c("1", "2", "3", "4", "5"), rand_subset_test)
 
-fit_full <- cfa(two_fct_model_full,  ordered = c("1", "2", "3", "4", "5"), clean_test) # full data set
+fit_full <- cfa(two_fct_model_full,  ordered = c("1", "2", "3", "4", "5"), clean) # full data set
 ```
 
 When the ordered= argument is used, lavaan will automatically switch to
